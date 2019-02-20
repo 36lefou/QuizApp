@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="340dp"
+        android:layout_height="150dp"
+        android:gravity="center"
+        app:srcCompat="@drawable/quiz"
+        android:layout_marginLeft="25dp"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/buttonG2"
+            android:layout_width="300dp"
+            android:layout_height="90dp"
+            android:layout_marginTop="50dp"
+            android:backgroundTint="#902C50"
+            android:text="@string/game_1"
+            android:onClick="game"
+            android:textColor="@android:color/white" />
+        <Button
+            android:id="@+id/buttonG1"
+            android:layout_width="300dp"
+            android:layout_height="90dp"
+            android:layout_marginTop="15dp"
+            android:backgroundTint="#902C50"
+            android:text="@string/game_2"
+            android:textColor="@android:color/white"
+            android:onClick="geoQuiz"/>
+        <Button
+            android:id="@+id/closeApp"
+            android:layout_width="300dp"
+            android:layout_height="90dp"
+            android:layout_marginTop="15dp"
+            android:backgroundTint="#902C50"
+            android:text="@string/close_app"
+            android:onClick="closeApplication"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

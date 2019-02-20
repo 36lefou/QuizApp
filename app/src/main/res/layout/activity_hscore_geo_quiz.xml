@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HScoreGeoQuiz"
+    android:orientation="vertical"
+    android:textAlignment="center"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/highscoreGeo"
+        android:layout_width="300dp"
+        android:layout_height="90dp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:background="@color/colorfield"
+        android:text="@string/high_score"
+        android:textSize="25dp"
+        android:textColor="@android:color/white"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/userHighScoreGeo"
+        android:layout_width="300dp"
+        android:layout_height="90dp"
+        android:textAlignment="center"
+        android:background="@color/colorfield"
+        android:text="User"
+        android:textSize="25dp"
+        android:gravity="center"
+        android:textColor="@android:color/white" />
+    <TextView
+        android:id="@+id/timeHighScoreGeo"
+        android:layout_width="300dp"
+        android:layout_height="90dp"
+        android:textAlignment="center"
+        android:background="@color/colorfield"
+        android:text="Time"
+        android:textSize="25dp"
+        android:gravity="center"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>
