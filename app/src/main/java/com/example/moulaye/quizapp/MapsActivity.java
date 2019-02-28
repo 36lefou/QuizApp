@@ -6,6 +6,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -35,6 +37,7 @@ import static android.support.constraint.Constraints.TAG;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ExampleDialog.OnInputListener {
     float [] dist = new float[10];
     float disf;
+
     int score;
     LatLng pt ;
     private GoogleMap mMap;
@@ -73,51 +76,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-       mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        // Add a marker in Sydney and move the camera
-    //    MyInfoWindowAdapter infoWindowAdap = new MyInfoWindowAdapter();
-      //  mMap.setInfoWindowAdapter(infoWindowAdap);
-
-
-       // Marker mm = mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-      //  mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        //  mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-/*
-        // Add a marker in Sydney and move the camera
-        LatLng Nkc = new LatLng(18.07275691, -375.98510742);
-        mMap.addMarker(new MarkerOptions().position(Nkc).title("Nouakchott"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(Nkc));
-*/
-        //Add Marker when click on the map
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng point) {
-
-
-               //clear the map
+                //clear the map
                 mMap.clear();
                 //adding new marker
                 mMap.addMarker(new MarkerOptions().position(point));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
-
                 pt=point;
-
-
-
 
             }
         });
-        QuizDbHelper dbHelper = new QuizDbHelper(this);
-        //dbHelper.
-        if (random==0){
-            latSyd= 35.861660 ; lonSyd= 104.195396;//chine
-            final TextView simpleText = (TextView) findViewById(R.id.Question);
-            simpleText.setText("Où est la Chine ?");
-            random++;
-        }
+
+
+
+
     }
 
+
     public void addMarkerButt(View v) throws InterruptedException {
+        if (random==0){
+
+            final Button butt =(Button) findViewById(R.id.buttoAdd);
+            butt.setText("Start");
+
+            showNextQuestion();
+        }
+        if(random>0){
 
             //Check if map was clicked
             if (pt == null) {
@@ -127,80 +114,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Location.distanceBetween(latSyd, lonSyd, pt.latitude, pt.longitude, dist);
                 disf = dist[0] / 1000;
                 System.out.println("la distance1 est: " + disf);
-                //    System.out.println("la distance2 est: " + dist[0] * 0.000621371192f);
-                // Sending result to TextView
+
+                if (random < 6) {
+                    try {
+                        Geocoder geocoder = new Geocoder(this);
+                        List<Address> addresses = null;
+                        List<Address> addresses1 = null;
+                        addresses = geocoder.getFromLocation(latSyd, lonSyd, 1);
+                        addresses1 = geocoder.getFromLocation(pt.latitude, pt.longitude, 1);
+                        String City1="";
+                        String City = addresses.get(0).getCountryName();
+                            if (addresses1 != null && addresses1.size() > 0){
+                                City1 = addresses1.get(0).getCountryName();
+                            System.out.println("citoh :" + City + "City 1: " + City1);}
+                            else {
+                                System.out.println("ce n'est pas un pays");
+                            }
 
 
-                /*if (disf < 50) {
-                    score++;
-                    Toast.makeText(MapsActivity.this, "Bonne réponse!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MapsActivity.this, "Mauvaise réponse!", Toast.LENGTH_SHORT).show();
-                }*/
-                if (random <5) {
-                try {
-                    Geocoder geocoder = new Geocoder(this);
-                    List<Address> addresses = null;
-                    List<Address> addresses1 = null;
-                    addresses = geocoder.getFromLocation(latSyd, lonSyd, 1);
-                    addresses1 = geocoder.getFromLocation(pt.latitude, pt.longitude, 1);
-                    /*String Country = addresses.get(0).getCountryName();*/
-                    String City = addresses.get(0).getCountryName();
-                    String City1 = addresses1.get(0).getCountryName();
-                    System.out.println("city :" + City + "City 1: " + City1);
+                        if (City.equals(City1)) {
+                            score++;
+                            Toast.makeText(MapsActivity.this, "Bonne réponse!", Toast.LENGTH_SHORT).show();
+                            System.out.println("city :" + City + "City 1: " + City1);
+                            final TextView simpleTextView = (TextView) findViewById(R.id.Reponse);
+                            simpleTextView.setText("Bonne Réponse");
+                        } else {
+                            Toast.makeText(MapsActivity.this, "Mauvaise réponse!", Toast.LENGTH_SHORT).show();
+                            final TextView simpleTextView = (TextView) findViewById(R.id.Reponse);
+                            simpleTextView.setText("La distance est: " + disf);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.out.println("4e maged yasla7 ye le7mar ");
 
-                    if (City.equals(City1)) {
-                        score++;
-                        Toast.makeText(MapsActivity.this, "Bonne réponse!", Toast.LENGTH_SHORT).show();
-                        System.out.println("city :" + City + "City 1: " + City1);
-                        final TextView simpleTextView = (TextView) findViewById(R.id.Reponse);
-                        simpleTextView.setText("Bonne Réponse");
-                    } else {
-                        Toast.makeText(MapsActivity.this, "Mauvaise réponse!", Toast.LENGTH_SHORT).show();
-                        final TextView simpleTextView = (TextView) findViewById(R.id.Reponse);
-                        simpleTextView.setText("La distance est: " + disf);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println("4e maged yasla7 ye le7mar ");
-
-                }
                 }
                 showNextQuestion();
 
                 System.out.println("random :" + random);
 
+            }
         }
     }
 
     private void showNextQuestion() throws InterruptedException {
-//= ThreadLocalRandom.current().nextInt(0, 2+1);
-        if(random==1) {
-            latSyd = 40.46775;
-            lonSyd = -3.74970;//madrid
+
+        if(random ==0) random=1;
+        QuizDbHelper dbHelper = new QuizDbHelper(this);
+        if(random<6 && random>0) {
+
+            String la1, lon1, nom;
+            la1=dbHelper.getlatLon(random).get(0).toString();
+            lon1=dbHelper.getlatLon(random).get(1).toString();
+            nom=dbHelper.getlatLon(random).get(2).toString();
+            latSyd = Double.parseDouble(la1);
+            lonSyd = Double.parseDouble(lon1);
             final TextView simpleText = (TextView) findViewById(R.id.Question);
-            simpleText.setText("Où est l'Espagne ?");
-        }
-        else if(random==2){
-            latSyd = 21.007891;
-            lonSyd = -10.940835;//NKC
-            final TextView simpleText = (TextView) findViewById(R.id.Question);
-            simpleText.setText("Où est la Mauritanie ?");
+            simpleText.setText("Où est "+ nom+"?");
+            final Button butt =(Button) findViewById(R.id.buttoAdd);
+            butt.setText("valid");
+            System.out.println("lat houn"+lonSyd+" lon "+latSyd+ "nom :"+nom);
 
         }
-        else if(random==3){
-            latSyd = 31.791702;
-            lonSyd = -7.092620;//maroc
-            final TextView simpleText = (TextView) findViewById(R.id.Question);
-            simpleText.setText("Où est le Maroc ?");
-
-        }
-        else if(random==4){
+        else if(random==6){
             final Button butt =(Button) findViewById(R.id.buttoAdd);
             butt.setText("Finish");
 
         }
-         if(random == 5){
+        if(random == 7){
             Toast.makeText(MapsActivity.this, "votre score est : "+score, Toast.LENGTH_SHORT).show();
 
             finishQuiz();
@@ -226,57 +207,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-
-}
-
-@SuppressLint("ValidFragment")
-class ExampleDialog extends AppCompatDialogFragment {
-    private EditText editTextUsername;
-    public  String username;
-    public interface OnInputListener{
-        void sendInput(String input);
-    }
-    public OnInputListener mOnInputListener;
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.layout_dialog, null);
-
-        builder.setView(view)
-                .setTitle("Entrer votre pseudonyme")
-                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        username = editTextUsername.getText().toString();
-                        if(username != "") {
-                            mOnInputListener.sendInput(username);
-                            dismiss();
-                            System.out.println("hihi"+username);
-                        }
-                        else {
-                            builder.setTitle("Entrer un Pseudo avant de jouer");
-
-                        }
-
-                    }
-                });
-
-        editTextUsername = view.findViewById(R.id.edit_username);
-
-        return builder.create();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try{
-            mOnInputListener = (OnInputListener) getActivity();
-        }catch (ClassCastException e){
-            Log.e(TAG, "onAttach: ClassCastException: " + e.getMessage() );
-        }
-    }
 
 }

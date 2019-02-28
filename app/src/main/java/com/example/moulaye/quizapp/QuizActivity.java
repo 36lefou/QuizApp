@@ -33,10 +33,6 @@ import static android.support.constraint.Constraints.TAG;
 
 public class QuizActivity extends AppCompatActivity implements ExDialog.OnInputListener {
     private TextView textViewQuestion;
-    private RadioGroup rbGroup;
-    private RadioButton rb1;
-    private RadioButton rb2;
-    private RadioButton rb3;
     private Button buttonConfirmNext;
     private List<Question> questionList;
     private int questionCounter;
@@ -44,7 +40,7 @@ public class QuizActivity extends AppCompatActivity implements ExDialog.OnInputL
     private Question currentQuestion;
     private int score;
     String username;
-
+    String text="";
     @Override
     public void sendInput(String input) {
         Log.d(TAG, "sendInput: got the input: " + input);
@@ -66,10 +62,6 @@ public class QuizActivity extends AppCompatActivity implements ExDialog.OnInputL
         exampleDialog.show(getSupportFragmentManager(), "example dialog");
 
         textViewQuestion = findViewById(R.id.text_view_question);
-        rbGroup = findViewById(R.id.radio_group);
-        rb1 = findViewById(R.id.radio_button1);
-        rb2 = findViewById(R.id.radio_button2);
-        rb3 = findViewById(R.id.radio_button3);
         buttonConfirmNext = findViewById(R.id.button_confirm_next);
 
 
@@ -77,34 +69,36 @@ public class QuizActivity extends AppCompatActivity implements ExDialog.OnInputL
         questionList = dbHelper.getAllQuestions();
         questionCountTotal = questionList.size();
         Collections.shuffle(questionList);
-
         showNextQuestion();
 
         buttonConfirmNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                    if (rb1.isChecked() || rb2.isChecked() || rb3.isChecked()) {
 
-                        RadioButton rbSelected = findViewById(rbGroup.getCheckedRadioButtonId());
-                        int answerNr = rbGroup.indexOfChild(rbSelected) + 1;
+                EditText simpleEditText=(EditText)findViewById(R.id.edit_reponse);
+                text = simpleEditText.getText().toString();
+                simpleEditText.setText("");
+                  System.out.print("currrento :"+currentQuestion.getCapitale()+" text1 "+text+"\n");
 
-                        if (answerNr == Integer.parseInt(currentQuestion.getAnswerNr())) {
-                            score++;
+                if (text.equals(currentQuestion.getCapitale())) {
+                    score++;
+                    System.out.print("ha4i wark :"+currentQuestion.getCapitale()+" text "+text+"\n");
 
+                    Toast.makeText(QuizActivity.this, "Bonne réponse!", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    System.out.print("ha4i mohou sal7 :"+currentQuestion.getCapitale()+" text "+text+"\n");
 
-                            Toast.makeText(QuizActivity.this, "Bonne réponse!", Toast.LENGTH_SHORT).show();
-                        }
-                        else{
-                            Toast.makeText(QuizActivity.this, "Mauvaise réponse", Toast.LENGTH_SHORT).show();
-                        }
+                    Toast.makeText(QuizActivity.this, "Mauvaise réponse", Toast.LENGTH_SHORT).show();
+                }
 
-                        showNextQuestion();
-                    }
+                showNextQuestion();
+
 
             }
         });
-}
+    }
 
     public void loadCSV2() {
 
@@ -133,18 +127,12 @@ public class QuizActivity extends AppCompatActivity implements ExDialog.OnInputL
                 Question question = new Question();
 
                 String pays = colums[0];
-                String option1 = colums[1];
-                String option2 = colums[2];
-                String option3 = colums[3];
-                String answer_nr = colums[4];
-                String lat = colums[5];
-                String lon = colums[6];
+                String capitale = colums[1];
+                String lat = colums[2];
+                String lon = colums[3];
 
                 question.setQuestion(pays);
-                question.setOption1(option1);
-                question.setOption2(option2);
-                question.setOption3(option3);
-                question.setAnswerNr(answer_nr);
+                question.setCapitale(capitale);
                 question.setLat(lat);
                 question.setLon(lon);
                 dbHelper.addQuestion(question);
@@ -157,23 +145,29 @@ public class QuizActivity extends AppCompatActivity implements ExDialog.OnInputL
 
 
         if (questionCounter < questionCountTotal) {
-            System.out.println("count total : "+questionCountTotal);
-            System.out.println("count"+questionCounter);
+            //   System.out.println("count total : "+questionCountTotal);
+            // System.out.println("count"+questionCounter);
             currentQuestion = questionList.get(questionCounter);
 
             textViewQuestion.setText(currentQuestion.getQuestion());
-            rb1.setText(currentQuestion.getOption1());
-            rb2.setText(currentQuestion.getOption2());
-            rb3.setText(currentQuestion.getOption3());
+
 
             questionCounter++;
 
             buttonConfirmNext.setText("Confirmer");
 
 
-        } else {
+        }
+
+
+        else {
             finishQuiz();
         }
+    }
+
+    private void qImage(){
+
+
     }
 
     private void finishQuiz() {
@@ -189,55 +183,4 @@ public class QuizActivity extends AppCompatActivity implements ExDialog.OnInputL
 
         finish();
     }
-}
-
-@SuppressLint("ValidFragment")
-class ExDialog extends AppCompatDialogFragment {
-    private EditText editTextUser;
-    public  String username;
-    public interface OnInputListener{
-        void sendInput(String input);
-    }
-    public OnInputListener mOnInputList;
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.layout_diag, null);
-
-        builder.setView(view)
-                .setTitle("Entrer votre pseudonyme")
-                .setPositiveButton("Jouer", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialInterface, int i) {
-                        username = editTextUser.getText().toString();
-                        if(username != "") {
-                            mOnInputList.sendInput(username);
-                            dismiss();
-                        }
-                        else {
-                            builder.setTitle("Entrer un Pseudo avant de jouer");
-
-                        }
-
-                    }
-                });
-
-        editTextUser = view.findViewById(R.id.edit_usernameQuiz);
-
-        return builder.create();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try{
-            mOnInputList = (OnInputListener) getActivity();
-        }catch (ClassCastException e){
-            Log.e(TAG, "onAttach: ClassCastException: " + e.getMessage() );
-        }
-    }
-
 }
